@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import "./Auth.css";
 import Card from "../../shared/components/UIElements/Card";
@@ -10,7 +10,11 @@ import {
 } from "../../shared/util/validators";
 import { useForm } from "../../shared/hooks/form-hook";
 import Button from "../../shared/components/FormElements/Button";
+import { AuthContext } from "../../shared/context/auth-context";
 const Auth = () => {
+
+const auth = useContext(AuthContext);
+
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -21,35 +25,38 @@ const Auth = () => {
       password: {
         value: "",
         isValid: false,
-      }
+      },
     },
     false
   );
   const switchModeHandler = () => {
-      if(!isLoginMode){
-          setFormData({
-              ...formState.inputs,
-              name: undefined
-          },formState.inputs.email.isValid&& formState.inputs.password.isValid)
-      }
-      else{
-          setFormData(
-              {
-                  ...formState.inputs,
-                  name:{
-                      value:'',
-                      isValue: false
-                  }
-              },
-              false
-          );
-
-      }
-    setIsLoginMode(prevMode => !prevMode);
+    if (!isLoginMode) {
+      setFormData(
+        {
+          ...formState.inputs,
+          name: undefined,
+        },
+        formState.inputs.email.isValid && formState.inputs.password.isValid
+      );
+    } else {
+      setFormData(
+        {
+          ...formState.inputs,
+          name: {
+            value: "",
+            isValue: false,
+          },
+        },
+        false
+      );
+    }
+    setIsLoginMode((prevMode) => !prevMode);
   };
   const authSubmithandler = (event) => {
     event.preventDefault();
     console.log(formState.inputs);
+
+    auth.login();
   };
 
   return (
@@ -87,13 +94,13 @@ const Auth = () => {
           onInput={inputHandler}
         />
         <Button type="submit" disabled={!formState.isValid}>
-          {isLoginMode ? 'LOGIN' : 'SIGNUP'}
+          {isLoginMode ? "LOGIN" : "SIGNUP"}
         </Button>
       </form>
       <Button inverse onClick={switchModeHandler}>
-        Switch to {isLoginMode ?  'SIGNUP' : 'LOGIN'}
+        Switch to {isLoginMode ? "SIGNUP" : "LOGIN"}
       </Button>
-    </Card> 
+    </Card>
   );
 };
 export default Auth;
